@@ -10,4 +10,4 @@ Daily working log of my open source contributions — what I investigated, what 
 - **Storybook** — [#35527](https://github.com/storybookjs/storybook/pull/35527) (JSDoc parser) and [#35528](https://github.com/storybookjs/storybook/pull/35528) (focus instrumentation), in review
 - **TanStack Router** — [#7817](https://github.com/TanStack/router/pull/7817) (lifecycle hooks feature), in review
 
-Entries live under [`journal/`](./journal), one file per day.
+Entries live under [`journal/`](./journal), one file per day. Deeper write-ups live under [`case-studies/`](./case-studies).
