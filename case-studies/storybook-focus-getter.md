@@ -16,4 +16,18 @@ With the prototype as receiver, the native `ownerDocument` accessor brand-checks
 
 **The outcome.** [PR #35528](https://github.com/storybookjs/storybook/pull/35528) in review, linked from both issues.
 
-**The takeaway.** A bug report's theory is a starting point, not a diagnosis. The stack trace doesn't lie — read it before you read the speculation.
+**The third issue — and empirical proof.** A week later a *third* issue appeared: Ark UI / Zag.js overlays with `defaultOpen` parking off-screen in Storybook 10.5, in the plain preview (no test addon). The reporter had done careful work and *explicitly ruled out the focus patch* — polling the property descriptor 81 times, never seeing an accessor. It looked like a separate regression.
+
+I rebuilt the scenario from scratch: a `storybook build` with Storybook 10.5.3 + Ark UI, inspected with Playwright. The key turned out to be *which component*. A `Popover` (doesn't move focus) positioned fine; a `Menu` (manages focus) parked at `-100vh`. The captured stack:
+
+```
+TypeError: Illegal invocation
+    at HTMLElement.get [as focus]   // the same 10.5 getter
+    at trackFocusVisible            // @zag-js/focus-visible
+```
+
+`@zag-js/focus-visible` reads `HTMLElement.prototype.focus` to capture-and-wrap it — the exact prototype read from the original diagnosis. The thrown error aborts Zag's setup *before floating-ui runs*, so the positioner never leaves its initial `-100vh`. The reporter's ruling-out was reasonable: they'd tested a component that doesn't call `trackFocusVisible`.
+
+Then I proved the fix rather than asserting it: patched the built bundle with #35528's guard and re-ran the Menu story. Before: `matrix(1,0,0,1,0,-720)`, `pointer-events: none`, thrown error. After: `matrix(1,0,0,1,16,45)`, `pointer-events: auto`, no error. One fix, three issues (#35503, #35502, #35546), with a reproducible before/after.
+
+**The takeaway.** A bug report's theory is a starting point, not a diagnosis — the stack trace doesn't lie. And when you claim a fix resolves an issue nobody connected to it, *prove it end-to-end* rather than reasoning by analogy: a patched bundle and a before/after measurement turn "should fix it" into "does fix it."
