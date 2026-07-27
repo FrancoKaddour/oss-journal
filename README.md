@@ -9,9 +9,9 @@ Daily working log of my open source contributions — what I investigated, what 
 **Merged & shipped**
 - **supabase-js** — realtime `track()` opts fix, shipped in [v2.110.6](https://github.com/supabase/supabase-js/releases/tag/v2.110.6) (credited in release notes)
 - **supabase-js** — functions abort-listener cleanup, shipped in [v2.110.8](https://github.com/supabase/supabase-js/releases/tag/v2.110.8) (credited in release notes)
+- **Zag.js** — [#3233](https://github.com/chakra-ui/zag/pull/3233): fixed viewport-dependent marquee speed, **merged by the project creator** (Segun Adebayo), queued for the next release
 
 **In review**
-- **Zag.js** — [#3233](https://github.com/chakra-ui/zag/pull/3233): fixed viewport-dependent marquee speed, **merged by the project creator** (Segun Adebayo), queued for release.
 - **Storybook** — [#35528](https://github.com/storybookjs/storybook/pull/35528): root-caused a `TypeError` in the 10.5 focus instrumentation and proved (with a patched-bundle before/after) that it resolves **three** separate issues — #35503, #35502, #35546. See the [case study](./case-studies/storybook-focus-getter.md).
 - **Storybook** — [#35527](https://github.com/storybookjs/storybook/pull/35527) (JSDoc parser) · [#35544](https://github.com/storybookjs/storybook/pull/35544) (dev-UI coverage race)
 - **TanStack Router** — [#7817](https://github.com/TanStack/router/pull/7817) (lifecycle hooks feature)
