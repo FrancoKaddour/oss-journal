@@ -1,0 +1,11 @@
+# Case study: the invisible close button on Spider-Man's official site
+
+**The problem.** The official Spanish website for *Spider-Man: Brand New Day* (built in public by midudev's team) opened its trailer in a native `<dialog>` — with no visible way to close it. No X anywhere. Escape and backdrop-click worked, but nothing on screen told you so.
+
+**The investigation.** Measured live on production: the dialog's border box started at `y=33`; the close button rendered at `y=-11` — positioned 44px *above* the panel via `-top-11`, completely outside the box. The dialog carried `overflow: hidden` (added in an earlier PR to fix mobile horizontal scroll), which clips both paint *and hit-testing* of anything outside the border box. `document.elementFromPoint` at the button's center returned the backdrop, not the button. Worse: as the dialog's first focusable element, `showModal()` handed initial keyboard focus to an invisible control — a WCAG 2.4.7 failure with a regression commit attached.
+
+**The fix.** Same pattern the site's own gallery already used correctly: padding on the panel with the button inside it — identical visual spacing, nothing left to clip. When the team reviewed asking for the X at the *screen* corner instead (aligned with the fixed UI), I shipped the revision within the hour: `position: fixed` escapes the overflow clip because the dialog carries no transform or filter — the `backdrop-filter` lives on the `::backdrop` pseudo-element, which doesn't create a containing block.
+
+**The outcome.** Merged by the team in under 24 hours from the PR being opened ([#62](https://github.com/midudev/spiderman-brand-new-day/pull/62)), live on the official movie site during its promotional window. Followed up with a measured keyboard-a11y audit of the gallery ([#68](https://github.com/midudev/spiderman-brand-new-day/issues/68)).
+
+**What I'd tell you in an interview.** Everyone watched that trailer; nobody reported the missing X — because absence is hard to notice and harder to prove. Measuring the geometry (`getBoundingClientRect`, `elementFromPoint`) turned "I think something's off" into a two-line diff nobody could argue with, and knowing the CSS containing-block rules turned the reviewer's design request into a one-hour fix instead of a debate.
